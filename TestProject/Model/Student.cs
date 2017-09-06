@@ -16,6 +16,15 @@ namespace TestProject.Model
         private int age;
         private bool gender;
 
+        public Student()
+        {
+            id = 0;
+            name = "";
+            last = "";
+            age = 16;
+            gender = false;
+        }
+
         public int Id
         {
             get
@@ -25,6 +34,7 @@ namespace TestProject.Model
             set
             {
                 id = value;
+                OnPropertyChanged("Id");
             }
         }
 
@@ -37,6 +47,7 @@ namespace TestProject.Model
             set
             {
                 name = value;
+                OnPropertyChanged("Name");
             }
         }
 
@@ -49,6 +60,7 @@ namespace TestProject.Model
             set
             {
                 last = value;
+                OnPropertyChanged("Last");
             }
         }
 
@@ -61,6 +73,7 @@ namespace TestProject.Model
             set
             {
                 age = value;
+                OnPropertyChanged("Age");
             }
         }
 
@@ -73,7 +86,55 @@ namespace TestProject.Model
             set
             {
                 gender = value;
+                OnPropertyChanged("Gender");
             }
+        }
+
+        public string ViewName
+        {
+            get
+            {
+                return name + " " + last;
+            }
+            private set {}
+        }
+
+        public string ViewAge
+        {
+            get
+            {
+                var str = age.ToString();
+
+                switch (age % 10)
+                {
+                    case 1:
+                        str += " год";
+                        break;
+                    case 2:
+                    case 3:
+                    case 4:
+                        str += " года";
+                        break;
+                    default:
+                        str += " лет";
+                        break;
+                }
+
+                return str;
+            }
+            private set {}
+        }
+        
+        public string ViewGender
+        {
+            get
+            {
+                if (gender)
+                    return "Женщина";
+                else
+                    return "Мужчина";
+            }
+            private set {}
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

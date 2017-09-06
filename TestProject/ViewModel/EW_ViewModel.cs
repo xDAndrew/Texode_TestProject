@@ -1,37 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace TestProject.ViewModel
 {
-    class StudentViewModel : INotifyPropertyChanged
+    class EW_ViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Model.Student> Students { get; set; }
-        private Model.Student selectedStudent;
-
-        public Model.Student SelectedStudent
+        private Model.Student student;
+        public Model.Student Student
         {
             get
             {
-                return selectedStudent;
+                return student;
             }
             set
             {
-                selectedStudent = value;
-                OnPropertyChanged("SelectedPhone");
+                student = value;
             }
         }
 
-        public StudentViewModel()
+        public EW_ViewModel()
         {
-            Students = new ObservableCollection<Model.Student>
-            {
-            };
+            student = new Model.Student();
+        }
+
+        public EW_ViewModel(Model.Student student)
+        {
+            Student = student;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

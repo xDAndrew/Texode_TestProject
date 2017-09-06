@@ -66,7 +66,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\Student.cs" />
-    <Compile Include="ViewModel\StudentViewModel.cs" />
+    <Compile Include="ViewModel\Command.cs" />
+    <Compile Include="ViewModel\EW_ViewModel.cs" />
+    <Compile Include="ViewModel\MW_ViewModel.cs" />
     <Compile Include="Views\EditWindow.xaml.cs">
       <DependentUpon>EditWindow.xaml</DependentUpon>
     </Compile>
