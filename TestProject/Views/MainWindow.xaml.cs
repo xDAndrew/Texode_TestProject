@@ -23,7 +23,7 @@ namespace TestProject
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new ViewModel.MW_ViewModel();
+            DataContext = new ViewModel.MW_ViewModel(this);
         }
     }
 }

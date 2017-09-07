@@ -18,7 +18,7 @@ namespace TestProject.Model
 
         public Student()
         {
-            id = 0;
+            id = -1;
             name = "";
             last = "";
             age = 16;

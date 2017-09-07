@@ -22,18 +22,16 @@
             </ToolBar>
             
             <StatusBar DockPanel.Dock="Bottom" Height="23">
-                <TextBlock Text="Записей в файле: "></TextBlock>
+                <TextBlock Text="Записей в файле: " />
             </StatusBar>
 
             <DataGrid Margin="0,1" RowBackground="Pink" AlternatingRowBackground="LightSkyBlue" IsReadOnly="True" AutoGenerateColumns="False"
                       ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" SelectionMode="Single" RowDetailsVisibilityMode="Collapsed">
-
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Имя" Binding="{Binding Path=ViewName}" Width="*" />
                     <DataGridTextColumn Header="Возраст" Binding="{Binding Path=ViewAge}" Width="*" />
                     <DataGridTextColumn Header="Пол" Binding="{Binding Path=ViewGender}" Width="*" />
                 </DataGrid.Columns>
-                
             </DataGrid>
 
         </DockPanel>

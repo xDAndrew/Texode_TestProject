@@ -18,13 +18,13 @@
         </Grid.ColumnDefinitions>
         
         <Label Grid.Row="0" Content="Имя" Margin="4,0"/>
-        <TextBox Grid.Row="0" DataContext="{Binding Path=Student}" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Height="23" VerticalAlignment="Bottom" Margin="8" />
+        <TextBox Grid.Row="0" DataContext="{Binding Path=Student}" Text="{Binding Name}" Height="23" VerticalAlignment="Bottom" Margin="8" />
 
         <Label Grid.Column="1" Content="Фамилия" Margin="4,0"/>
         <TextBox Grid.Column="1" DataContext="{Binding Path=Student}" Text="{Binding Last}" Height="23" VerticalAlignment="Bottom" Margin="8"/>
         
         <Label Grid.Row="1" Content="Возраст" Margin="4,0"/>
-        <TextBox Grid.Row="1" DataContext="{Binding Path=Student}" Text="{Binding Age}" Height="23" VerticalAlignment="Bottom" Margin="8"/>
+        <TextBox Grid.Row="1" DataContext="{Binding Path=Student}" Text="{Binding Age}" Height="23" VerticalAlignment="Bottom" Margin="8" />
 
         <Label Grid.Row="1" Grid.Column="1" Content="Пол" Margin="4,0"/>
         <ComboBox Grid.Row="1" Grid.Column="1" DataContext="{Binding Path=Student}" SelectedIndex="{Binding Gender}" Height="23" Margin="8" VerticalAlignment="Bottom">
@@ -32,7 +32,6 @@
             <ComboBoxItem Content="Женщина"></ComboBoxItem>
         </ComboBox>
 
-        <Button Grid.Row="2" Grid.Column="1" Width="100" Height="23" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8" 
-                Content="Сохранить" Click="Button_Click"/>
+        <Button Grid.Row="2" Grid.Column="1" Width="100" Height="23" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="8" Content="Сохранить" Command="{Binding SaveChange}"/>
     </Grid>
 </Window>

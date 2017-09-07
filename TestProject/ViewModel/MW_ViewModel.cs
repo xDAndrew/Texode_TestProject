@@ -7,14 +7,19 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace TestProject.ViewModel
 {
     class MW_ViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<Model.Student> Students { get; set; }
-        private Model.Student selectedStudent;
+        private Window WinHandle;
+        private XDocument xmlDoc;
 
+        public ObservableCollection<Model.Student> Students { get; set; }
+
+        private Model.Student selectedStudent;
         public Model.Student SelectedStudent
         {
             get
@@ -28,6 +33,17 @@ namespace TestProject.ViewModel
             }
         }
 
+        private bool? OpenDialog(Model.Student student, out ViewModel.EW_ViewModel VM)
+        {
+            var EditForm = new EditWindow();
+            var EditFormVM = new EW_ViewModel(student, EditForm);
+            EditForm.DataContext = EditFormVM;
+            EditForm.Owner = WinHandle;
+            EditForm.ShowDialog();
+            VM = EditFormVM;
+            return EditForm.DialogResult.Value;
+        }
+
         private Command addNewItem;
         public Command AddNewItem
         {
@@ -37,15 +53,30 @@ namespace TestProject.ViewModel
 
                 (addNewItem = new Command(obj =>
                 {
-                    var EditForm = new EditWindow();
-                    var EditFormVM = new EW_ViewModel();
-                    EditForm.DataContext = EditFormVM;
-                    EditForm.ShowDialog();
-                    if (EditForm.DialogResult.Value == true)
+                    ViewModel.EW_ViewModel VM;
+                    if (OpenDialog(new Model.Student(), out VM).Value == true)
                     {
                         var item = new Model.Student();
-                        item = EditFormVM.Student;
+                        item = VM.Student;
                         Students.Add(item);
+
+                        if (xmlDoc != null)
+                        {
+                            xmlDoc.Root.Add(new XElement("Student",
+                                 new XAttribute("Id", "-1"),
+                                 new XElement("FirstName", VM.Student.Name),
+                                 new XElement("Last", VM.Student.Last),
+                                 new XElement("Age", VM.Student.Age.ToString()),
+                                 new XElement("Gender", VM.Student.Gender ? "1" : "0")));
+
+                            int i = 0;
+                            foreach (XElement ex in xmlDoc.Root.Elements("Student"))
+                            {
+                                ex.Attribute("Id").Value = i.ToString();
+                                i++;
+                            }
+                            xmlDoc.Save("./Students.xml");
+                        }
                     }
                 }));
             }
@@ -60,16 +91,34 @@ namespace TestProject.ViewModel
 
                 (editItem = new Command(obj =>
                 {
-                    var EditForm = new EditWindow();
-                    var EditFormVM = new EW_ViewModel(SelectedStudent);
-                    EditForm.DataContext = EditFormVM;
-                    EditForm.ShowDialog();
-                    if (EditForm.DialogResult.Value == true)
+                    ViewModel.EW_ViewModel VM;
+                    if (SelectedStudent != null && OpenDialog(SelectedStudent, out VM).Value == true)
                     {
-                        SelectedStudent.Name = EditFormVM.Student.Name;
-                        SelectedStudent.Last = EditFormVM.Student.Last;
-                        SelectedStudent.Age = EditFormVM.Student.Age;
-                        SelectedStudent.Gender = EditFormVM.Student.Gender;
+                        SelectedStudent.Id = VM.Student.Id;
+                        SelectedStudent.Name = VM.Student.Name;
+                        SelectedStudent.Last = VM.Student.Last;
+                        SelectedStudent.Age = VM.Student.Age;
+                        SelectedStudent.Gender = VM.Student.Gender;
+
+                        if (xmlDoc != null)
+                        {
+                            foreach (XElement ex in xmlDoc.Root.Elements("Student"))
+                            {
+                                int id = Int32.Parse(ex.Attribute("Id").Value);
+                                if (id == VM.Student.Id)
+                                {
+                                    ex.Element("FirstName").Value = VM.Student.Name;
+                                    ex.Element("Last").Value = VM.Student.Last;
+                                    ex.Element("Age").Value = VM.Student.Age.ToString();
+                                    ex.Element("Gender").Value = VM.Student.Gender ? "1" : "0";
+                                }
+                            }
+                            xmlDoc.Save("./Students.xml");
+                        }
+
+                        SelectedStudent.OnPropertyChanged("ViewName");
+                        SelectedStudent.OnPropertyChanged("ViewAge");
+                        SelectedStudent.OnPropertyChanged("ViewGender");
                     }
                 }));
             }
@@ -86,10 +135,24 @@ namespace TestProject.ViewModel
                 {
                     if (selectedStudent != null)
                     {
-                        if (MessageBox.Show("Запись \"" + SelectedStudent.ViewName + "\" будет удалена\nПродолжить?", 
+                        if (MessageBox.Show(WinHandle, 
+                            "Запись \"" + SelectedStudent.ViewName + "\" будет удалена\nПродолжить?", 
                             "Удаление записи", 
                             MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
+                            if (xmlDoc != null)
+                            {
+                                foreach (XElement ex in xmlDoc.Root.Elements("Student"))
+                                {
+                                    int id = Int32.Parse(ex.Attribute("Id").Value);
+                                    if (id == selectedStudent.Id)
+                                    {
+                                        ex.Remove();
+                                    }
+                                }
+                                xmlDoc.Save("./Students.xml");
+                            }
+
                             Students.Remove(selectedStudent);
                         }
                     }
@@ -97,15 +160,35 @@ namespace TestProject.ViewModel
             }
         }
 
-        public MW_ViewModel()
+        public MW_ViewModel(Window HWDL)
         {
-            Students = new ObservableCollection<Model.Student> 
+            this.WinHandle = HWDL;
+            Students = new ObservableCollection<Model.Student>(); 
+
+            try
             {
-                new Model.Student {Id = 0, Age = 26, Gender = false, Last = "Иванов", Name="Андрей"},
-                new Model.Student {Id = 0, Age = 40, Gender = false, Last = "Васильев", Name="Сергей"},
-                new Model.Student {Id = 0, Age = 37, Gender = true, Last = "Петрова", Name="Инна"},
-                new Model.Student {Id = 0, Age = 21, Gender = false, Last = "Генннов", Name="Иван"}
-            };
+                xmlDoc = XDocument.Load("./Students.xml");
+
+                var items = from xe in xmlDoc.Element("Students").Elements("Student")
+                    select new Model.Student
+                    {
+                        Id = int.Parse(xe.Attribute("Id").Value),
+                        Name = xe.Element("FirstName").Value,
+                        Last = xe.Element("Last").Value,
+                        Age = int.Parse(xe.Element("Age").Value),
+                        Gender = (xe.Element("Gender").Value.Equals("0") ? false : true)
+                    };
+
+                foreach (var item in items)
+                {
+                    Students.Add(item);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
