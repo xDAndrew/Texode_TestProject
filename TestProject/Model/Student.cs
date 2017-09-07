@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TestProject.Model
 {
-    public class Student : INotifyPropertyChanged
+    public class Student : INotifyPropertyChanged, ICloneable
     {
         private int id;
         private string name;
@@ -96,7 +96,6 @@ namespace TestProject.Model
             {
                 return name + " " + last;
             }
-            private set {}
         }
 
         public string ViewAge
@@ -122,7 +121,6 @@ namespace TestProject.Model
 
                 return str;
             }
-            private set {}
         }
         
         public string ViewGender
@@ -134,7 +132,6 @@ namespace TestProject.Model
                 else
                     return "Мужчина";
             }
-            private set {}
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -142,6 +139,18 @@ namespace TestProject.Model
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(prop));
+        }
+
+        public object Clone()
+        {
+            return new Student
+            {
+                Id = this.Id,
+                Name = this.name,
+                Last = this.last,
+                Age = this.Age,
+                Gender = this.Gender
+            };
         }
     }
 }

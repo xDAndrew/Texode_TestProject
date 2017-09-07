@@ -4,34 +4,52 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Texode Test Project" 
         Height="600" Width="800" 
-        MinWidth="800" MinHeight="600"
-        WindowStartupLocation="CenterScreen">
+        MinHeight="600" MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Icon=".././Source/AppIco.ico">
 
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top"  Height="23"/>
+            <Menu DockPanel.Dock="Top"  Height="23">
+                <MenuItem Header="Меню">
+                    <MenuItem Header="Новая запись" Command="{Binding Path=AddNewItem}"/>
+                    <MenuItem Header="Редактировать запись" Command="{Binding Path=EditItem}" IsEnabled="{Binding IntefaceEnabled}"/>
+                    <MenuItem Header="Удалить запись" Command="{Binding Path=RemoveItem}" IsEnabled="{Binding IntefaceEnabled}"/>
+                    <Separator />
+                    <MenuItem Header="Выход" Command="{Binding Path=CloseApp}"/>
+                </MenuItem>
+            </Menu>
+            
             <ToolBar DockPanel.Dock="Top" Height="30" Width="Auto">
                 <Button Command="{Binding Path=AddNewItem}" Width="25" Height="25">
+                    <Image Source=".././Source/Add.png" />
                 </Button>
 
-                <Button Command="{Binding Path=EditItem}" Width="25" Height="25">
+                <Button Command="{Binding Path=EditItem}" IsEnabled="{Binding IntefaceEnabled}" Width="25" Height="25">
+                    <Image Source=".././Source/Edit.png" />
                 </Button>
 
-                <Button Command="{Binding Path=RemoveItem}" Width="25" Height="25">
+                <Separator/>
+
+                <Button Command="{Binding Path=RemoveItem}" IsEnabled="{Binding IntefaceEnabled}" Width="25" Height="25">
+                    <Image Source=".././Source/Delete.png" />
                 </Button>
             </ToolBar>
             
             <StatusBar DockPanel.Dock="Bottom" Height="23">
-                <TextBlock Text="Записей в файле: " />
+                <TextBlock Text="Записей в таблице: " />
+                <TextBlock Text="{Binding Count}" />
             </StatusBar>
 
             <DataGrid Margin="0,1" RowBackground="Pink" AlternatingRowBackground="LightSkyBlue" IsReadOnly="True" AutoGenerateColumns="False"
-                      ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" SelectionMode="Single" RowDetailsVisibilityMode="Collapsed">
+                      ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" SelectionMode="Single">
+
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Имя" Binding="{Binding Path=ViewName}" Width="*" />
                     <DataGridTextColumn Header="Возраст" Binding="{Binding Path=ViewAge}" Width="*" />
                     <DataGridTextColumn Header="Пол" Binding="{Binding Path=ViewGender}" Width="*" />
                 </DataGrid.Columns>
+                
             </DataGrid>
 
         </DockPanel>

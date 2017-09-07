@@ -33,6 +33,23 @@ namespace TestProject.ViewModel
             }
         }
 
+        public bool IntefaceEnabled
+        {
+            get
+            {
+                return Students.Count == 0 ? false : true;
+            }
+        }
+
+        public int Count
+        {
+            get
+            {
+                return Students.Count;
+            }
+            private set {}
+        }
+
         private bool? OpenDialog(Model.Student student, out ViewModel.EW_ViewModel VM)
         {
             var EditForm = new EditWindow();
@@ -49,16 +66,15 @@ namespace TestProject.ViewModel
         {
             get
             {
-                return addNewItem ??
-
-                (addNewItem = new Command(obj =>
+                return addNewItem ?? (addNewItem = new Command(obj =>
                 {
                     ViewModel.EW_ViewModel VM;
                     if (OpenDialog(new Model.Student(), out VM).Value == true)
                     {
-                        var item = new Model.Student();
-                        item = VM.Student;
+                        var item = (Model.Student)VM.Student.Clone();
                         Students.Add(item);
+                        OnPropertyChanged("Count");
+                        OnPropertyChanged("IntefaceEnabled");
 
                         if (xmlDoc != null)
                         {
@@ -87,9 +103,7 @@ namespace TestProject.ViewModel
         {
             get
             {
-                return editItem ??
-
-                (editItem = new Command(obj =>
+                return editItem ?? (editItem = new Command(obj =>
                 {
                     ViewModel.EW_ViewModel VM;
                     if (SelectedStudent != null && OpenDialog(SelectedStudent, out VM).Value == true)
@@ -111,6 +125,7 @@ namespace TestProject.ViewModel
                                     ex.Element("Last").Value = VM.Student.Last;
                                     ex.Element("Age").Value = VM.Student.Age.ToString();
                                     ex.Element("Gender").Value = VM.Student.Gender ? "1" : "0";
+                                    break;
                                 }
                             }
                             xmlDoc.Save("./Students.xml");
@@ -129,13 +144,11 @@ namespace TestProject.ViewModel
         {
             get
             {
-                return removeItem ??
-
-                (removeItem = new Command(obj =>
+                return removeItem ?? (removeItem = new Command(obj =>
                 {
                     if (selectedStudent != null)
                     {
-                        if (MessageBox.Show(WinHandle, 
+                        if (MessageBox.Show(
                             "Запись \"" + SelectedStudent.ViewName + "\" будет удалена\nПродолжить?", 
                             "Удаление записи", 
                             MessageBoxButton.YesNo) == MessageBoxResult.Yes)
@@ -148,36 +161,47 @@ namespace TestProject.ViewModel
                                     if (id == selectedStudent.Id)
                                     {
                                         ex.Remove();
+                                        break;
                                     }
                                 }
                                 xmlDoc.Save("./Students.xml");
                             }
 
                             Students.Remove(selectedStudent);
+                            OnPropertyChanged("Count");
+                            OnPropertyChanged("IntefaceEnabled");
                         }
                     }
                 }));
             }
         }
 
+        private Command closeApp;
+        public Command CloseApp
+        {
+            get
+            {
+                return closeApp ?? (closeApp = new Command(obj => Application.Current.Shutdown() ));
+            }
+        }
+
         public MW_ViewModel(Window HWDL)
         {
             this.WinHandle = HWDL;
-            Students = new ObservableCollection<Model.Student>(); 
+            Students = new ObservableCollection<Model.Student>();
 
             try
             {
                 xmlDoc = XDocument.Load("./Students.xml");
-
                 var items = from xe in xmlDoc.Element("Students").Elements("Student")
-                    select new Model.Student
-                    {
-                        Id = int.Parse(xe.Attribute("Id").Value),
-                        Name = xe.Element("FirstName").Value,
-                        Last = xe.Element("Last").Value,
-                        Age = int.Parse(xe.Element("Age").Value),
-                        Gender = (xe.Element("Gender").Value.Equals("0") ? false : true)
-                    };
+                            select new Model.Student
+                            {
+                                Id = int.Parse(xe.Attribute("Id").Value),
+                                Name = xe.Element("FirstName").Value,
+                                Last = xe.Element("Last").Value,
+                                Age = int.Parse(xe.Element("Age").Value),
+                                Gender = (xe.Element("Gender").Value.Equals("0") ? false : true)
+                            };
 
                 foreach (var item in items)
                 {

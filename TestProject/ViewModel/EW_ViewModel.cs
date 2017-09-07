@@ -13,6 +13,13 @@ namespace TestProject.ViewModel
     {
         private Window WinHWDL;
 
+        public EW_ViewModel(Window WinHWDL) : this(new Model.Student(), WinHWDL) { }
+        public EW_ViewModel(Model.Student student, Window WinHWDL)
+        {
+            this.student = (Model.Student)student.Clone();
+            this.WinHWDL = WinHWDL;
+        }
+
         private Model.Student student;
         public Model.Student Student
         {
@@ -23,27 +30,8 @@ namespace TestProject.ViewModel
             set
             {
                 student = value;
+
             }
-        }
-
-        public EW_ViewModel(Window WinHWDL)
-        {
-            student = new Model.Student();
-            this.WinHWDL = WinHWDL;
-        }
-
-        public EW_ViewModel(Model.Student student, Window WinHWDL)
-        {
-            var ns = new Model.Student
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Last = student.Last,
-                Age = student.Age,
-                Gender = student.Gender
-            };
-            this.student = ns;
-            this.WinHWDL = WinHWDL;
         }
 
         private Command saveChange;
@@ -51,25 +39,12 @@ namespace TestProject.ViewModel
         {
             get
             {
-                return saveChange ??
-
-                (saveChange = new Command(obj =>
+                return saveChange ?? (saveChange = new Command(obj =>
                 {
                     var str = "";
                     if (student.Name == "") str += "Поле \"Имя\" должно быть заполнено";
                     if (student.Last == "") str += "\nПоле \"Фамилия\" должно быть заполнено";
-                    int age = 0;
-                    if (int.TryParse(student.Age.ToString(), out age))
-                    {
-                        if (age < 16 || age > 100)
-                        {
-                            str += "\nВозраст должен быть в диапазоне 16...100 лет";
-                        }
-                    }
-                    else
-                    {
-                        str += "\nВ поле \"Возраст\" неверное значение";
-                    }
+                    if (student.Age < 16 || student.Age > 100) str += "\nВозраст должен быть в диапазоне 16...100 лет";
 
                     if (str == "")
                     {
@@ -77,9 +52,7 @@ namespace TestProject.ViewModel
                         this.WinHWDL.Close();
                     }
                     else
-                    {
                         MessageBox.Show(this.WinHWDL, str, "Не верные данные");
-                    }
                 }));
             }
         }
