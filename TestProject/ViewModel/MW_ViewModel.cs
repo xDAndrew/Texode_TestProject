@@ -47,7 +47,22 @@ namespace TestProject.ViewModel
             {
                 return Students.Count;
             }
-            private set {}
+        }
+
+        public string ShowTemplate1
+        {
+            get
+            {
+                return Students.Count == 0 ? "Visible" : "Collapsed";
+            }
+        }
+
+        public string ShowTemplate2
+        {
+            get
+            {
+                return Students.Count == 0 ? "Collapsed" : "Visible";
+            }
         }
 
         private bool? OpenDialog(Model.Student student, out ViewModel.EW_ViewModel VM)
@@ -75,6 +90,8 @@ namespace TestProject.ViewModel
                         Students.Add(item);
                         OnPropertyChanged("Count");
                         OnPropertyChanged("IntefaceEnabled");
+                        OnPropertyChanged("ShowTemplate1");
+                        OnPropertyChanged("ShowTemplate2");
 
                         if (xmlDoc != null)
                         {
@@ -170,6 +187,8 @@ namespace TestProject.ViewModel
                             Students.Remove(selectedStudent);
                             OnPropertyChanged("Count");
                             OnPropertyChanged("IntefaceEnabled");
+                            OnPropertyChanged("ShowTemplate1");
+                            OnPropertyChanged("ShowTemplate2");
                         }
                     }
                 }));

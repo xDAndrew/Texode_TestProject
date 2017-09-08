@@ -29,7 +29,7 @@
                     <Image Source=".././Source/Edit.png" />
                 </Button>
 
-                <Separator/>
+                <Separator Visibility="Collapsed"/>
 
                 <Button Command="{Binding Path=RemoveItem}" IsEnabled="{Binding IntefaceEnabled}" Width="25" Height="25">
                     <Image Source=".././Source/Delete.png" />
@@ -41,17 +41,22 @@
                 <TextBlock Text="{Binding Count}" />
             </StatusBar>
 
-            <DataGrid Margin="0,1" RowBackground="Pink" AlternatingRowBackground="LightSkyBlue" IsReadOnly="True" AutoGenerateColumns="False"
-                      ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" SelectionMode="Single">
+            <Grid>
+                <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" Visibility="{Binding ShowTemplate1}">Список пуст</TextBlock>
+            
+                <DataGrid Margin="0,1" RowBackground="Pink" AlternatingRowBackground="LightSkyBlue" IsReadOnly="True" AutoGenerateColumns="False"
+                          ItemsSource="{Binding Students}" SelectedItem="{Binding SelectedStudent}" Visibility="{Binding ShowTemplate2}" SelectionMode="Single">
 
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Имя" Binding="{Binding Path=ViewName}" Width="*" />
-                    <DataGridTextColumn Header="Возраст" Binding="{Binding Path=ViewAge}" Width="*" />
-                    <DataGridTextColumn Header="Пол" Binding="{Binding Path=ViewGender}" Width="*" />
-                </DataGrid.Columns>
-                
-            </DataGrid>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding Path=ViewName}" Width="*" />
+                        <DataGridTextColumn Header="Возраст" Binding="{Binding Path=ViewAge}" Width="*" />
+                        <DataGridTextColumn Header="Пол" Binding="{Binding Path=ViewGender}" Width="*" />
+                    </DataGrid.Columns>
+                              
+                </DataGrid>
 
+            </Grid>
+            
         </DockPanel>
     </Grid>
 </Window>
